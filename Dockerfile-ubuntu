@@ -1,0 +1,26 @@
+ARG UBUNTU_VERSION
+
+FROM ghcr.io/catthehacker/ubuntu:act-${UBUNTU_VERSION}
+
+ARG UBUNTU_VERSION
+ARG YQ_VERSION="v4.24.5"
+ARG GOMPLATE_VERSION="v3.10.0"
+ARG BUILD_DATE
+ARG BUILD_REVISION
+ARG BUILD_OWNER="carbon-nexus"
+ARG BUILD_REPO="act-images"
+
+RUN wget -q https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64 -O /usr/bin/yq \
+    && chmod +x /usr/bin/yq \
+    && curl -o /usr/local/bin/gomplate -sSL https://github.com/hairyhenderson/gomplate/releases/download/${GOMPLATE_VERSION}/gomplate_linux-amd64 \
+    && chmod 755 /usr/local/bin/gomplate
+
+LABEL org.opencontainers.image.created="${BUILD_DATE}"
+LABEL org.opencontainers.image.vendor="${BUILD_OWNER}"
+LABEL org.opencontainers.image.authors="https://github.com/${BUILD_OWNER}"
+LABEL org.opencontainers.image.url="https://github.com/${BUILD_OWNER}/${BUILD_REPO}"
+LABEL org.opencontainers.image.source="https://github.com/${BUILD_OWNER}/${BUILD_REPO}"
+LABEL org.opencontainers.image.documentation="https://github.com/${BUILD_OWNER}/${BUILD_REPO}"
+LABEL org.opencontainers.image.description="Special image built for using with https://github.com/nektos/act, with yq and gomplate installed"
+LABEL org.opencontainers.image.base.name="ghcr.io/catthehacker/ubuntu:act-${UBUNTU_VERSION}"
+LABEL org.opencontainers.image.revision="${BUILD_REVISION}"

@@ -14,7 +14,12 @@ ARG BUILD_REPO="act-images"
 RUN wget -q https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_${PLATFORM} -O /usr/bin/yq \
     && chmod +x /usr/bin/yq \
     && curl -o /usr/local/bin/gomplate -sSL https://github.com/hairyhenderson/gomplate/releases/download/${GOMPLATE_VERSION}/gomplate_linux-${PLATFORM} \
-    && chmod 755 /usr/local/bin/gomplate
+    && chmod 755 /usr/local/bin/gomplate \
+    && if [ "${PLATFORM}" = "amd64" ]; then curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"; else curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"; fi \
+    && unzip awscliv2.zip \
+    && sudo ./aws/install \
+    && rm -rf awscliv2.zip \
+    && rm -rf aws
 
 LABEL org.opencontainers.image.created="${BUILD_DATE}"
 LABEL org.opencontainers.image.vendor="${BUILD_OWNER}"

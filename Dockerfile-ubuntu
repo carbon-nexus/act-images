@@ -5,6 +5,7 @@ FROM ghcr.io/catthehacker/ubuntu:act-${UBUNTU_VERSION}
 ARG UBUNTU_VERSION
 ARG YQ_VERSION="v4.24.5"
 ARG GOMPLATE_VERSION="v3.10.0"
+ARG GH_VERSION="2.20.2"
 ARG PLATFORM
 ARG BUILD_DATE
 ARG BUILD_REVISION
@@ -14,7 +15,12 @@ ARG BUILD_REPO="act-images"
 RUN wget -q https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_${PLATFORM} -O /usr/bin/yq \
     && chmod +x /usr/bin/yq \
     && curl -o /usr/local/bin/gomplate -sSL https://github.com/hairyhenderson/gomplate/releases/download/${GOMPLATE_VERSION}/gomplate_linux-${PLATFORM} \
-    && chmod 755 /usr/local/bin/gomplate
+    && chmod 755 /usr/local/bin/gomplate \
+    && if [ "${PLATFORM}" = "amd64" ]; then curl -sSL "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_amd64.tar.gz" -o "gh_${GH_VERSION}.tar.gz"; else curl -sSL "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_arm64.tar.gz" -o "gh_${GH_VERSION}.tar.gz"; fi \
+    && tar -xvf gh_${GH_VERSION}.tar.gz \
+    && mv gh_${GH_VERSION}*/bin/gh /usr/local/bin/gh \
+    && chmod 755 /usr/local/bin/gh \
+    && rm -rf gh_${GH_VERSION}*
 
 LABEL org.opencontainers.image.created="${BUILD_DATE}"
 LABEL org.opencontainers.image.vendor="${BUILD_OWNER}"

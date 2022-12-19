@@ -6,6 +6,8 @@ ARG UBUNTU_VERSION
 ARG YQ_VERSION="v4.28.1"
 ARG GOMPLATE_VERSION="v3.10.0"
 ARG GH_VERSION="2.20.2"
+ARG KUSTOMIZE_VERSION="4.5.4"
+ARG HELM_VERSION="3.10.3"
 ARG PLATFORM
 ARG BUILD_DATE
 ARG BUILD_REVISION
@@ -16,16 +18,33 @@ RUN wget -q https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_l
     && chmod +x /usr/bin/yq \
     && curl -o /usr/local/bin/gomplate -sSL https://github.com/hairyhenderson/gomplate/releases/download/${GOMPLATE_VERSION}/gomplate_linux-${PLATFORM} \
     && chmod 755 /usr/local/bin/gomplate \
-    && if [ "${PLATFORM}" = "amd64" ]; then curl -sSL "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_amd64.tar.gz" -o "gh_${GH_VERSION}.tar.gz"; else curl -sSL "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_arm64.tar.gz" -o "gh_${GH_VERSION}.tar.gz"; fi \
+    && if [ "${PLATFORM}" = "amd64" ]; then \
+        curl -sSL "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_amd64.tar.gz" -o "gh_${GH_VERSION}.tar.gz"; \
+    else \
+        curl -sSL "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_arm64.tar.gz" -o "gh_${GH_VERSION}.tar.gz"; \
+    fi \
     && tar -xvf gh_${GH_VERSION}.tar.gz \
     && mv gh_${GH_VERSION}*/bin/gh /usr/local/bin/gh \
     && chmod 755 /usr/local/bin/gh \
     && rm -rf gh_${GH_VERSION}* \
-    && if [ "${PLATFORM}" = "amd64" ]; then curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"; else curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"; fi \
-    && unzip awscliv2.zip \
-    && sudo ./aws/install \
-    && rm -rf awscliv2.zip \
-    && rm -rf aws
+    && curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" -o install_kustomize.sh \
+    && chmod +x install_kustomize.sh \
+    && bash install_kustomize.sh "${KUSTOMIZE_VERSION}" \
+    && rm -rf install_kustomize.sh \
+    && mv kustomize /usr/local/bin/kustomize \
+    && if [ "${PLATFORM}" = "amd64" ]; then \
+        curl -sSL https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz -o helm-v${HELM_VERSION}-linux-amd64.tar.gz \
+        && tar -zxvf helm-v${HELM_VERSION}-linux-amd64.tar.gz \
+        && chmod +x linux-amd64/helm \
+        && mv linux-amd64/helm /usr/local/bin/helm \
+        && rm -rf linux-amd64 helm-v${HELM_VERSION}-linux-amd64.tar.gz; \
+    else \
+        curl -sSL https://get.helm.sh/helm-v${HELM_VERSION}-linux-arm64.tar.gz -o helm-v${HELM_VERSION}-linux-arm64.tar.gz \
+        && tar -zxvf helm-v${HELM_VERSION}-linux-arm64.tar.gz \
+        && chmod +x linux-arm64/helm \
+        && mv linux-arm64/helm /usr/local/bin/helm \
+        && rm -rf linux-arm64 helm-v${HELM_VERSION}-linux-arm64.tar.gz; \
+    fi
 
 LABEL org.opencontainers.image.created="${BUILD_DATE}"
 LABEL org.opencontainers.image.vendor="${BUILD_OWNER}"

@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 UBUNTU_VERSIONS=(
-    18.04
     20.04
     22.04
 )

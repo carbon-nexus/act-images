@@ -8,11 +8,14 @@ ARG GOMPLATE_VERSION="v3.10.0"
 ARG GH_VERSION="2.20.2"
 ARG KUSTOMIZE_VERSION="4.5.4"
 ARG HELM_VERSION="3.10.3"
+ARG TILT_VERSION="0.31.1"
+ARG MINIKUBE_VERSION="v1.29.0"
 ARG PLATFORM
 ARG BUILD_DATE
 ARG BUILD_REVISION
 ARG BUILD_OWNER="carbon-nexus"
 ARG BUILD_REPO="act-images"
+
 
 RUN wget -q https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_${PLATFORM} -O /usr/bin/yq \
     && chmod +x /usr/bin/yq \
@@ -45,8 +48,8 @@ RUN wget -q https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_l
         && mv linux-arm64/helm /usr/local/bin/helm \
         && rm -rf linux-arm64 helm-v${HELM_VERSION}-linux-arm64.tar.gz; \
     fi \
-    && curl -fsSL https://raw.githubusercontent.com/tilt-dev/tilt/master/scripts/install.sh | bash \
-    && curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-$PLATFORM \
+    && curl -fsSL https://raw.githubusercontent.com/tilt-dev/tilt/v$TILT_VERSION/scripts/install.sh | bash \
+    && curl -LO https://storage.googleapis.com/minikube/releases/$MINIKUBE_VERSION/minikube-linux-$PLATFORM \
     && sudo install minikube-linux-$PLATFORM /usr/local/bin/minikube
 
 

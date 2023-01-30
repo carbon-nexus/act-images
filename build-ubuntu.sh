@@ -47,3 +47,16 @@ for PLATFORM in "${PLATFORMS[@]}"; do
         -t carbonnexus/act-images:act-${PLATFORM}-ubuntu-k8s-${UBUNTU_VERSION} .
     done
 done
+
+for PLATFORM in "${PLATFORMS[@]}"; do
+    for UBUNTU_VERSION in "${UBUNTU_VERSIONS[@]}"; do
+        docker build \
+        -f Dockerfile-ubuntu-tilt \
+        --build-arg PLATFORM=${PLATFORM} \
+        --build-arg UBUNTU_VERSION=${UBUNTU_VERSION} \
+        --build-arg BUILD_DATE=$(date +"%Y-%m-%dT%H:%M:%S%z") \
+        --build-arg BUILD_REVISION=$(git rev-parse HEAD) \
+        --platform="linux/${PLATFORM}" \
+        -t carbonnexus/act-images:act-${PLATFORM}-ubuntu-${UBUNTU_VERSION}-tilt .
+    done
+done

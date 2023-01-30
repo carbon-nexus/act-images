@@ -57,6 +57,6 @@ for PLATFORM in "${PLATFORMS[@]}"; do
         --build-arg BUILD_DATE=$(date +"%Y-%m-%dT%H:%M:%S%z") \
         --build-arg BUILD_REVISION=$(git rev-parse HEAD) \
         --platform="linux/${PLATFORM}" \
-        -t carbonnexus/act-images:act-${PLATFORM}-ubuntu-${UBUNTU_VERSION}-tilt .
+        -t carbonnexus/act-images:act-${PLATFORM}-ubuntu-tilt-${UBUNTU_VERSION} .
     done
 done

@@ -1,0 +1,23 @@
+ARG NODE_VERSION
+
+FROM node:${NODE_VERSION}
+
+ARG NODE_VERSION
+ARG PLATFORM
+ARG BUILD_DATE
+ARG BUILD_REVISION
+ARG BUILD_OWNER="carbon-nexus"
+ARG BUILD_REPO="act-images"
+
+RUN apt-get update \
+    && apt-get install yamllint -y
+
+LABEL org.opencontainers.image.created="${BUILD_DATE}"
+LABEL org.opencontainers.image.vendor="${BUILD_OWNER}"
+LABEL org.opencontainers.image.authors="https://github.com/${BUILD_OWNER}"
+LABEL org.opencontainers.image.url="https://github.com/${BUILD_OWNER}/${BUILD_REPO}"
+LABEL org.opencontainers.image.source="https://github.com/${BUILD_OWNER}/${BUILD_REPO}"
+LABEL org.opencontainers.image.documentation="https://github.com/${BUILD_OWNER}/${BUILD_REPO}"
+LABEL org.opencontainers.image.description="Special image built for using with https://github.com/nektos/act, with yq and gomplate installed"
+LABEL org.opencontainers.image.base.name="node:${NODE_VERSION}"
+LABEL org.opencontainers.image.revision="${BUILD_REVISION}"

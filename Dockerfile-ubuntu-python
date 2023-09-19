@@ -1,0 +1,29 @@
+ARG UBUNTU_VERSION
+
+FROM ghcr.io/catthehacker/ubuntu:act-${UBUNTU_VERSION}
+ARG UBUNTU_VERSION
+ARG GH_VERSION="2.20.2"
+ARG PLATFORM
+ARG BUILD_DATE
+ARG BUILD_REVISION
+ARG BUILD_OWNER="carbon-nexus"
+ARG BUILD_REPO="act-images"
+
+RUN apt update \
+    && apt install python3-pip \
+    && python3 -m pip install ruamel.yaml==0.17.20 fire \
+    && curl -sSL "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${PLATFORM}.tar.gz" -o "gh_${GH_VERSION}.tar.gz" \
+    && tar -xvf gh_${GH_VERSION}.tar.gz \
+    && mv gh_${GH_VERSION}*/bin/gh /usr/local/bin/gh \
+    && chmod 755 /usr/local/bin/gh \
+    && rm -rf gh_${GH_VERSION}*
+
+LABEL org.opencontainers.image.created="${BUILD_DATE}"
+LABEL org.opencontainers.image.vendor="${BUILD_OWNER}"
+LABEL org.opencontainers.image.authors="https://github.com/${BUILD_OWNER}"
+LABEL org.opencontainers.image.url="https://github.com/${BUILD_OWNER}/${BUILD_REPO}"
+LABEL org.opencontainers.image.source="https://github.com/${BUILD_OWNER}/${BUILD_REPO}"
+LABEL org.opencontainers.image.documentation="https://github.com/${BUILD_OWNER}/${BUILD_REPO}"
+LABEL org.opencontainers.image.description="Special image built for using with https://github.com/nektos/act, with python3"
+LABEL org.opencontainers.image.base.name="ghcr.io/catthehacker/ubuntu:act-${UBUNTU_VERSION}"
+LABEL org.opencontainers.image.revision="${BUILD_REVISION}"
